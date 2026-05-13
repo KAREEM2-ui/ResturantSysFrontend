@@ -14,21 +14,15 @@ import {
 } from "lucide-react";
 
 import { lazy } from "react";
-import { Skeleton } from "../ui/skeleton";
 
-const AdminDashboard  = lazy(()=> import("../../Pages/AdminDashboard"));
 const Orders  = lazy(()=> import("../../Pages/Orders"));
 const Clients  = lazy(()=> import("../../Pages/Clients"));
-const Reports  = lazy(()=> import("../../Pages/Reports"));
 const ProductsList  = lazy(()=> import("../../Pages/ProductsList"));
 const InventoryItems  = lazy(()=> import("../../Pages/InventoryItems"));
 const InventoryProduce  = lazy(()=> import("../../Pages/InventoryProduce"));
 const BranchInventoryPage  = lazy(()=> import("../../Pages/BranchInventoryPage"));
 const UsersPage  = lazy(()=> import("../../Pages/UsersPage"));
-const RolesPage  = lazy(()=> import("../../Pages/RolesPage"));
 const BranchesPage  = lazy(()=> import("../../Pages/BranchesPage"));
-const DiscountsPage  = lazy(()=> import("../../Pages/DiscountsPage"));
-const CouponsPage = lazy(()=> import("../../Pages/CouponsPage"));
 const POS = lazy(() => import("../../Pages/POS"));
 
 
