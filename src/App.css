@@ -1,0 +1,113 @@
+/* =======================
+   GLOBAL RESET
+======================= */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  background-color: #f8f9fa;
+  font-family: Arial, sans-serif;
+}
+
+/* =======================
+   SIDEBAR
+======================= */
+.sidebar {
+  background-color: #f8f9fa;
+  color: #212529;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.sidebar .header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #dee2e6;
+  padding: 20px;
+  font-weight: bold;
+  font-size: 18px;
+  text-align: center;
+}
+
+/* =======================
+   NAV LINKS
+======================= */
+.inactive-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  margin: 6px 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #6c757d;
+  transition: 0.2s;
+}
+
+.inactive-link:hover {
+  background-color: #e9ecef;
+  color: #000;
+}
+
+/* Active link */
+.active-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  margin: 6px 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  background-color: #0d6efd;
+  color: white !important;
+}
+
+/* =======================
+   LOGOUT
+======================= */
+.inactive-logout {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #dc3545;
+  transition: 0.2s;
+}
+
+.inactive-logout:hover {
+  background-color: #f8d7da;
+  color: #b02a37;
+}
+
+.active-logout {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  background-color: #dc3545;
+  color: white !important;
+}
+
+/* =======================
+   MAIN CONTENT AREA
+======================= */
+.main-content {
+  background-color: #ffffff;
+  height: 100%;
+  border-radius: 10px;
+  overflow-y: auto;
+}
+
+/* Optional scroll styling */
+.main-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
