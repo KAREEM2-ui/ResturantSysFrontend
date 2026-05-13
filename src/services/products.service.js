@@ -1,10 +1,9 @@
-const BASE_URL = "http://localhost:5000/api";
 
 import { getAuthHeaders } from "../components/auth/util";
 
 export const productsService = {
   getProducts: async ({ page = 1 } = {}) => {
-    const response = await fetch(`${BASE_URL}/products?page=${page}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/products?page=${page}`, {
       method: "GET",
       headers: getAuthHeaders(),
     });
@@ -23,7 +22,7 @@ export const productsService = {
   },
 
   createProduct: async (data) => {
-    const response = await fetch(`${BASE_URL}/products`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/products`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
@@ -33,7 +32,7 @@ export const productsService = {
   },
 
   updateProduct: async ({ id, ...data }) => {
-    const response = await fetch(`${BASE_URL}/products/${id}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/products/${id}`, {
       method: "PATCH",
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
@@ -43,7 +42,7 @@ export const productsService = {
   },
   
   deleteProduct: async (id) => {
-    const response = await fetch(`${BASE_URL}/products/${id}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/products/${id}`, {
       method: "DELETE",
       headers: getAuthHeaders(),
     });
@@ -53,7 +52,7 @@ export const productsService = {
 
   getBranchProducts: async ({ branchId } = {}) => {
     if (!branchId) throw new Error("branchId is required");
-    const response = await fetch(`${BASE_URL}/products/branch/${branchId}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/products/branch/${branchId}`, {
       method: "GET",
       headers: getAuthHeaders(),
     });

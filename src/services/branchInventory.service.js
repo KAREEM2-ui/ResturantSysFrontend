@@ -1,11 +1,10 @@
-const BASE_URL = "http://localhost:5000/api";
 
 import { getAuthHeaders } from "../components/auth/util";
 
 export const branchInventoryService = {
   // Get all branch inventory records (paginated)
   getBranchInventory: async (page = 1, take = 10) => {
-    const response = await fetch(`${BASE_URL}/branch-inventory?page=${page}&take=${take}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/branch-inventory?page=${page}&take=${take}`, {
       method: "GET",
       headers: getAuthHeaders(),
     });
@@ -15,7 +14,7 @@ export const branchInventoryService = {
 
   // Get inventory for a specific branch (paginated)
   getBranchInventoryByBranch: async (branchId, page = 1, take = 10) => {
-    const response = await fetch(`${BASE_URL}/branch-inventory/${branchId}?page=${page}&take=${take}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/branch-inventory/${branchId}?page=${page}&take=${take}`, {
       method: "GET",
       headers: getAuthHeaders(),
     });
@@ -25,7 +24,7 @@ export const branchInventoryService = {
 
   // Get producible inventory items for a specific branch
   getProducibleItemsByBranch: async (branchId) => {
-    const response = await fetch(`${BASE_URL}/branch-inventory/${branchId}?type=producible`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/branch-inventory/${branchId}?type=producible`, {
       method: "GET",
       headers: getAuthHeaders(),
     });
@@ -36,7 +35,7 @@ export const branchInventoryService = {
 
   // Create branch inventory record
   createBranchInventory: async (payload) => {
-    const response = await fetch(`${BASE_URL}/branch-inventory`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/branch-inventory`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify(payload),
@@ -47,7 +46,7 @@ export const branchInventoryService = {
 
   // Update branch inventory (adjust stock, etc.)
   updateBranchInventory: async (branchInventoryId, payload) => {
-    const response = await fetch(`${BASE_URL}/branch-inventory/${branchInventoryId}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/branch-inventory/${branchInventoryId}`, {
       method: "PATCH",
       headers: getAuthHeaders(),
       body: JSON.stringify(payload),
@@ -58,7 +57,7 @@ export const branchInventoryService = {
 
   // Delete branch inventory record
   deleteBranchInventory: async (branchInventoryId) => {
-    const response = await fetch(`${BASE_URL}/branch-inventory/${branchInventoryId}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/branch-inventory/${branchInventoryId}`, {
       method: "DELETE",
       headers: getAuthHeaders(),
     });
@@ -68,7 +67,7 @@ export const branchInventoryService = {
 
   // Transfer stock between branches
   transferStock: async (payload) => {
-    const response = await fetch(`${BASE_URL}/branch-inventory/transfer`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/branch-inventory/transfer`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify(payload),
@@ -79,7 +78,7 @@ export const branchInventoryService = {
 
   // Adjust stock for branch
   adjustStock: async (branchInventoryId, quantity) => {
-    const response = await fetch(`${BASE_URL}/branch-inventory/${branchInventoryId}/adjust`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/branch-inventory/${branchInventoryId}/adjust`, {
       method: "PATCH",
       headers: getAuthHeaders(),
       body: JSON.stringify({ quantity }),

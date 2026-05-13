@@ -1,10 +1,9 @@
 import { getAuthHeaders } from "../components/auth/util";
 
-const BASE_URL = "http://localhost:5000/api";
 
 export const branchesService = {
   getBranches: async ({ page = 1 } = {}) => {
-    const response = await fetch(`${BASE_URL}/branches?page=${page}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/branches?page=${page}`, {
       method: "GET",
       headers: getAuthHeaders(),
     });
@@ -13,7 +12,7 @@ export const branchesService = {
   },
 
   createBranch: async (data) => {
-    const response = await fetch(`${BASE_URL}/branches`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/branches`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify(data),

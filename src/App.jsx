@@ -23,7 +23,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path={loginRoute.path} element={<loginRoute.component />} />
-        <Route path="/" element={<Navigate to="/admin/summary" replace />} />
+        <Route path="/" element={<Navigate to="/login" replace />} />
         
 
         <Route
@@ -68,7 +68,7 @@ function App() {
               );
             })}
         </Route>
-        <Route path="*" element={<Navigate to="/admin/summary" replace />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );

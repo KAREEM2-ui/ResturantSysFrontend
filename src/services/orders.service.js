@@ -1,11 +1,10 @@
-const BASE_URL = "http://localhost:5000/api";
 
 import { getAuthHeaders } from "../components/auth/util";
 
 
 export const ordersService = {
   getOrders: async ({ page = 1 } = {}) => {
-    const response = await fetch(`${BASE_URL}/orders?page=${page}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/orders?page=${page}`, {
       method: "GET",
       headers: getAuthHeaders(),
     });
@@ -15,7 +14,7 @@ export const ordersService = {
 
   getBranchOrders: async ({ branchId, page = 1 } = {}) => {
     if (!branchId) throw new Error("branchId is required");
-    const response = await fetch(`${BASE_URL}/orders/branch/${branchId}?page=${page}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/orders/branch/${branchId}?page=${page}`, {
       method: "GET",
       headers: getAuthHeaders(),
     });
@@ -24,7 +23,7 @@ export const ordersService = {
   },
 
   createOrder: async (orderData) => {
-    const response = await fetch(`${BASE_URL}/orders`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/orders`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify(orderData),
@@ -34,7 +33,7 @@ export const ordersService = {
   },
 
   updateOrder: async ({ id, ...data }) => {
-    const response = await fetch(`${BASE_URL}/orders/${id}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/orders/${id}`, {
       method: "PATCH",
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
@@ -44,7 +43,7 @@ export const ordersService = {
   },
   
   deleteOrder: async (id) => {
-    const response = await fetch(`${BASE_URL}/orders/${id}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/orders/${id}`, {
       method: "DELETE",
       headers: getAuthHeaders(),
     });

@@ -1,4 +1,3 @@
-const BASE_URL = "http://localhost:5000/api";
 
 import { getAuthHeaders } from "../components/auth/util";
 
@@ -7,7 +6,7 @@ export const clientsService = {
     const params = new URLSearchParams();
     params.set("page", String(page));
 
-    const response = await fetch(`${BASE_URL}/loyalty-clients?${params.toString()}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/loyalty-clients?${params.toString()}`, {
       method: "GET",
       headers: getAuthHeaders(),
     });

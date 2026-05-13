@@ -4,7 +4,7 @@ import { getAuthHeaders } from "../components/auth/util.js";
 
 export const inventoryService = {
   getInventoryItems: async ({ page = 1, limit = 10 } = {}) => {
-    const response = await fetch(`${BASE_URL}/inventory-items?page=${page}&limit=${limit}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/inventory-items?page=${page}&limit=${limit}`, {
       method: "GET",
       headers: getAuthHeaders(),
     });
@@ -13,7 +13,7 @@ export const inventoryService = {
   },
 
   createInventoryItem: async (data) => {
-    const response = await fetch(`${BASE_URL}/inventory-items`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/inventory-items`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
@@ -23,7 +23,7 @@ export const inventoryService = {
   },
 
   updateInventoryItem: async (id, data) => {
-    const response = await fetch(`${BASE_URL}/inventory-items/${id}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/inventory-items/${id}`, {
       method: "PATCH",
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
@@ -33,7 +33,7 @@ export const inventoryService = {
   },
 
   getBranchProducts: async (branchId) => {
-  const response = await fetch(`${BASE_URL}/products/branch/${branchId}`, {
+  const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/products/branch/${branchId}`, {
     method: "GET",
     headers: getAuthHeaders(),
   });

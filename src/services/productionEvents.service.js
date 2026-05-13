@@ -1,11 +1,10 @@
-const BASE_URL = "http://localhost:5000/api";
 
 import { getAuthHeaders } from "../components/auth/util";
 
 export const productionEventsService = {
   // Get all production events (paginated)
   getProductionEvents: async (page = 1) => {
-    const response = await fetch(`${BASE_URL}/production-events?page=${page}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/production-events?page=${page}`, {
       method: "GET",
       headers: getAuthHeaders(),
     });
@@ -15,7 +14,7 @@ export const productionEventsService = {
 
   // Get single production event
   getProductionEvent: async (id) => {
-    const response = await fetch(`${BASE_URL}/production-events/${id}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/production-events/${id}`, {
       method: "GET",
       headers: getAuthHeaders(),
     });
@@ -25,7 +24,7 @@ export const productionEventsService = {
 
   // Create production event
   createProductionEvent: async (payload) => {
-    const response = await fetch(`${BASE_URL}/production-events`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/production-events`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify(payload),
@@ -38,7 +37,7 @@ export const productionEventsService = {
   updateProductionEvent: async ({ id, ...payload }) => {
     console.log("calling update produce");
     
-    const response = await fetch(`${BASE_URL}/production-events/${id}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/production-events/${id}`, {
       method: "PATCH",
       headers: getAuthHeaders(),
       body: JSON.stringify(payload),
@@ -51,7 +50,7 @@ export const productionEventsService = {
 
   // Delete production event
   deleteProductionEvent: async (id) => {
-    const response = await fetch(`${BASE_URL}/production-events/${id}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/production-events/${id}`, {
       method: "DELETE",
       headers: getAuthHeaders(),
     });
@@ -61,7 +60,7 @@ export const productionEventsService = {
 
   // Fetch all producible inventory items
   getProducibleItems: async () => {
-    const response = await fetch(`${BASE_URL}/inventory-items`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/inventory-items`, {
       method: "GET",
       headers: getAuthHeaders(),
     });
@@ -74,7 +73,7 @@ export const productionEventsService = {
 
   // Fetch single inventory item with ingredients populated
   getInventoryItem: async (id) => {
-    const response = await fetch(`${BASE_URL}/inventory-items/${id}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/inventory-items/${id}`, {
       method: "GET",
       headers: getAuthHeaders(),
     });
