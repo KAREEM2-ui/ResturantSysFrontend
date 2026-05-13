@@ -15,7 +15,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  base: '/ResturantSysFrontend',
+  base: '/',
 
   test: {
     globals: true,
