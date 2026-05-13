@@ -75,4 +75,5 @@ export const sectionRoutes = [
 ];
 
 
-export const loginRoute = { label: "Login", path: "login", component: lazy(() => import("../../Pages/Home")), icon: <Shield className="h-4 w-4" /> };
+export const homeRoute = { label: "Home", path: "home", component: lazy(() => import("../../Pages/Home")), icon: <Shield className="h-4 w-4" /> };
+export const loginRoute = { ...homeRoute, path: "login", label: "Login" };

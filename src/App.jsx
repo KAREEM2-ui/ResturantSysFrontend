@@ -1,9 +1,8 @@
 import { Suspense } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import AdminLayout from "./components/admin/AdminLayout";
-import { sectionRoutes } from "./components/admin/admin-config";
+import { sectionRoutes, homeRoute } from "./components/admin/admin-config";
 import { Skeleton } from "./components/ui/skeleton";
-import { loginRoute } from "./components/admin/admin-config";
 
 function PageSkeleton() {
   return (
@@ -22,7 +21,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path={loginRoute.path} element={<loginRoute.component />} />
+        <Route path="/login" element={homeRoute.component} />
         <Route path="/" element={<Navigate to="/login" replace />} />
         
 
@@ -68,7 +67,7 @@ function App() {
               );
             })}
         </Route>
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/home" replace />} />
       </Routes>
     </BrowserRouter>
   );
