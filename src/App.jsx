@@ -21,8 +21,16 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={homeRoute.component} />
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route
+          path="/home"
+          element={
+            <Suspense fallback={<PageSkeleton />}>
+              <homeRoute.component />
+            </Suspense>
+          }
+        />
+        <Route path="/login" element={<Navigate to="/home" replace />} />
+        <Route path="/" element={<Navigate to="/home" replace />} />
         
 
         <Route
@@ -30,6 +38,7 @@ function App() {
           element={<AdminLayout />}
         >
           <Route index element={<Navigate to="orders" replace />} />
+          <Route path="summary" element={<Navigate to="orders" replace />} />
           {sectionRoutes
             .filter((section) => section.path)
             .map((section) => {
