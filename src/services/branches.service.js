@@ -19,5 +19,22 @@ export const branchesService = {
     });
     if (!response.ok) throw new Error("Failed to create branch");
     return response.json();
+  },
+
+
+  TrygetUserBranchByLocation: async () => {
+
+
+    const response = await fetch(`${import.meta.env.VITE_GEO_API_URL}`, {
+      method: "GET",
+    });
+    if (!response.ok) 
+      {
+        console.error("Failed to fetch user branch by location", response);
+        throw new Error("Failed to fetch user branch by location");
+      }
+
+
+    return response.json();
   }
 };

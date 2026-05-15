@@ -1,9 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSelector } from "react-redux";
 import { branchInventoryService } from "../services/branchInventory.service";
 import { branchesService } from "../services/branches.service";
+import { selectBranchId } from "../features_State/appConfigSlice";
 
-export const useBranchInventoryViewModel = (selectedBranchId, page = 1) => {
+export const useBranchInventoryViewModel = (page = 1) => {
   const queryClient = useQueryClient();
+  const selectedBranchId = useSelector(selectBranchId);
 
   // Fetch all branches
   const { data: branchesData = {} } = useQuery({

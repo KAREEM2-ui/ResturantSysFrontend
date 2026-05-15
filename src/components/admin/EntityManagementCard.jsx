@@ -183,6 +183,7 @@ export default function EntityManagementCard({
                           <Button
                             type="button"
                             variant="ghost"
+                            data-testid={`row-action-button}`}
                             size="icon-sm"
                             aria-label={`Open actions for ${rowActions.label(row)}`}
                           >
@@ -197,6 +198,7 @@ export default function EntityManagementCard({
                       <DropdownMenuSeparator />
                       {rowActions.items(row).map((action) => (
                         <DropdownMenuItem
+                          data-testid={`row-action-item-${action.label}`}
                           key={action.label}
                           onClick={() => {
                             action.onClick?.(row);

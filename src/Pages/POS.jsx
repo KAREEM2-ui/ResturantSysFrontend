@@ -6,16 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Receipt, CheckCircle2, Loader2, AlertCircle, Plus, X, AlertTriangle } from "lucide-react";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-  SelectGroup,
-  SelectLabel,
-} from "@/components/ui/select";
-import { useBranchesViewModel } from "@/viewmodels/useBranchesViewModel";
+import { useSelector } from "react-redux";
+
 
 export default function POS() {
   const {
@@ -39,17 +31,18 @@ export default function POS() {
     // Actions
     handleAddToBill,
     removeFromBill,
-    applyCoupon,
-    removeCouponHandler,
     handlePlaceOrder,
-    setBranchId,
     branchId,
     getItemQuantityInBill
   } = usePOSViewModel();
 
-  const {branches,isLoading} = useBranchesViewModel();
+  const branchIdFromStore = useSelector((state) => state.appConfig.selectedBranchId);
+
+
+
   
   const [selectedCategory, setSelectedCategory] = useState("All");
+
 
   // Calculate remaining/possible stock for a product
   const calculateRemainingStock = (product) => {
@@ -92,7 +85,7 @@ export default function POS() {
     return calculateRemainingStock(product) <= 0;
   };
 
-  if (isLoadingProducts || isLoading) {
+  if (isLoadingProducts) {
     return (
       <div className="h-screen flex flex-col items-center justify-center text-muted-foreground space-y-4">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -101,33 +94,21 @@ export default function POS() {
     );
   }
 
-  
-
-  if (branchId === null) {
+  if (!branchIdFromStore) {
     return (
-      <div className="h-screen flex flex-col items-center justify-center text-muted-foreground space-y-4">
-        <AlertCircle className="h-8 w-8" />
-        <p>No branch selected. Please select a branch to load the menu.</p>
-        <div className="w-80">
-          <Select value={branchId || ""} onValueChange={(v) => setBranchId(v)}>
-            <SelectTrigger className="h-11 w-full">
-              <SelectValue placeholder="Select Branch" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Branches</SelectLabel>
-                {branches.map((branch) => (
-                  <SelectItem key={branch._id} value={branch._id}>
-                    {branch.name}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+      <div className="h-screen grid place-items-center bg-muted/20 p-8 text-center text-muted-foreground">
+        <div className="max-w-md space-y-3 rounded-xl border bg-background p-6 shadow-sm">
+          <AlertCircle className="mx-auto h-8 w-8" />
+          <p className="font-medium text-foreground">Select a branch to load the POS menu.</p>
+          <p className="text-sm text-muted-foreground">Use the branch picker in the admin sidebar, then reopen POS.</p>
         </div>
       </div>
     );
   }
+
+  
+
+
 
 
 
@@ -167,7 +148,7 @@ export default function POS() {
               )}
             </Button>
           ))}
-          <Button variant="ghost" size="icon" onClick={createNewWindowHandler}>
+          <Button data-testid="create-window-button" variant="ghost" size="icon" onClick={createNewWindowHandler}>
             <Plus className="h-5 w-5" />
           </Button>
         </div>
@@ -209,24 +190,23 @@ export default function POS() {
                 const remainingStock = calculateRemainingStock(item);
                 const outOfStock = isOutOfStock(item);
                 const lowStock = remainingStock > 0 && remainingStock <= 5;
-                const canAddMore = itemQtyInBill < remainingStock;
 
                 return (
                 <Card
                   key={item._id || item.id || i}
                   className={`cursor-pointer transition-all active:scale-95 ${
-                    outOfStock || !canAddMore
+                    outOfStock 
                       ? 'opacity-50 cursor-not-allowed border-destructive/50' 
                       : 'hover:border-primary hover:shadow-md'
                   } ${isAdded ? 'border-primary shadow-sm' : ''}`}
-                  onClick={() => canAddMore && handleAddToBill(item)}
+                  onClick={() => !outOfStock && handleAddToBill(item)}
                 >
                   <CardContent className="p-4 flex flex-col items-center text-center gap-2">
                     <div className="h-20 w-20 rounded-full bg-muted flex items-center justify-center mb-2 relative">
                       <span className="text-2xl font-bold text-muted-foreground">
                         {item.name?.charAt(0) || "?"}
                       </span>
-                      {(outOfStock || !canAddMore) && (
+                      {outOfStock && (
                         <div className="absolute inset-0 rounded-full flex items-center justify-center bg-destructive/20">
                           <AlertTriangle className="h-6 w-6 text-destructive" />
                         </div>
@@ -262,12 +242,6 @@ export default function POS() {
                     {outOfStock && (
                       <Badge variant="destructive" className="mt-1">
                         Out of Stock
-                      </Badge>
-                    )}
-
-                    {!canAddMore && !outOfStock && (
-                      <Badge variant="destructive" className="mt-1">
-                        Max Reached
                       </Badge>
                     )}
 

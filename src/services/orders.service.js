@@ -41,6 +41,16 @@ export const ordersService = {
     if (!response.ok) throw new Error("Failed to update order");
     return response.json();
   },
+
+  updateOrderStatus: async ({ id, status }) => {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/orders/${id}/status`, {
+      method: "PATCH",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ status }),
+    });
+    if (!response.ok) throw new Error("Failed to update order status");
+    return response.json();
+  },
   
   deleteOrder: async (id) => {
     const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/orders/${id}`, {

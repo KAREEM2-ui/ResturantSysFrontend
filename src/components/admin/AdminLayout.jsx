@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { ChevronDown, ChevronRight, Settings2 } from "lucide-react";
 import { useCan } from "../../hooks/useCan";
+import { useBranchesViewModel } from "../../viewmodels/useBranchesViewModel";
+import { useDispatch, useSelector } from "react-redux";
 
 import { sectionRoutes } from "./admin-config";
 import {
@@ -23,6 +25,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { selectBranchId, setSelectedBranchId } from "../../features_State/appConfigSlice";
 
 function getRoutePath(route) {
   return `/admin/${String(route.path).replace(/^\/+/, "")}`;
@@ -75,12 +79,18 @@ export function AppSidebar() {
   const [openGroups, setOpenGroups] = useState({});
   const { isMobile, setOpenMobile } = useSidebar();
   const can = useCan();
+  const dispatch = useDispatch();
+  const authUser = useSelector((state) => state.auth.user);
+  const branchId = useSelector(selectBranchId);
+  const { branches, isLoading: isLoadingBranches } = useBranchesViewModel(1);
 
   const closeMobileSidebar = () => {
     if (isMobile) {
       setOpenMobile(false);
     }
   };
+
+
 
   return (
     <Sidebar collapsible="offcanvas">
@@ -96,6 +106,29 @@ export function AppSidebar() {
             <Settings2 className="h-4 w-4" />
           </span>
         </div>
+
+        {authUser?.role === "admin" && !authUser?.branchId ? (
+          <div className="mt-3 rounded-lg border border-sidebar-border bg-background p-3">
+            <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+              Branch Context
+            </p>
+            <Select value={branchId || ""} onValueChange={(value) => dispatch(setSelectedBranchId(value))}>
+              <SelectTrigger className="h-10 w-full">
+                <SelectValue placeholder={isLoadingBranches ? "Loading branches..." : "Select branch"} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Branches</SelectLabel>
+                  {branches.map((branch) => (
+                    <SelectItem key={branch._id} value={String(branch._id)}>
+                      {branch.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+        ) : null}
       </SidebarHeader>
 
       <SidebarContent>
@@ -104,7 +137,6 @@ export function AppSidebar() {
             <SidebarMenu>
               {sectionRoutes.map((section) => {
                 if (section.path) {
-
                   const to = getRoutePath(section);
                   const isActive = location.pathname === to;
 

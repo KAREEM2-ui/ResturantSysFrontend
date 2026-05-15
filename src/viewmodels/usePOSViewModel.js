@@ -13,14 +13,14 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useCallback, useEffect } from "react";
 import {inventoryService} from "../services/inventory.service";
-import { useState } from "react";
+import { selectBranchId, setSelectedBranchId } from "../features_State/appConfigSlice";
 
 export function usePOSViewModel() {
   const dispatch = useDispatch();
   const windows = useSelector((state) => state.pos.windows);
   const activeWindowId = useSelector((state) => state.pos.activeWindowId);
   const authUser = useSelector((state) => state.auth.user);
-  const [branchId, setBranchId] = useState(authUser?.branchId || null);
+  const branchId = useSelector(selectBranchId);
 
 
   // Initialize first window if none exist
@@ -148,7 +148,7 @@ export function usePOSViewModel() {
     applyCoupon: applyCouponHandler,
     removeCouponHandler,
     handlePlaceOrder,
-    setBranchId,
+    setBranchId: (value) => dispatch(setSelectedBranchId(value)),
     branchId,
     getItemQuantityInBill
   };

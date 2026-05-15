@@ -1,8 +1,11 @@
 import { useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { productionEventsService } from "../services/productionEvents.service";
+import { useSelector } from "react-redux";
+import { selectBranchId } from "../features_State/appConfigSlice";
 
 export const useProductionEventsViewModel = (page = 1, branches = []) => {
+  const BranchIdRequired = useSelector(selectBranchId);
   const queryClient = useQueryClient();
   const branchNameById = useMemo(() => {
     return new Map(
@@ -18,9 +21,10 @@ export const useProductionEventsViewModel = (page = 1, branches = []) => {
 
   // Fetch production events
   const { data: eventsData = { data: { productionEvents: [] }, totalCount: 0 }, isLoading } = useQuery({
-    queryKey: ["productionEvents", page],
-    queryFn: () => productionEventsService.getProductionEvents(page),
+    queryKey: ["productionEvents", page, BranchIdRequired],
+    queryFn: () => productionEventsService.getProductionEvents({ page, branchId: BranchIdRequired }),
     staleTime: 2 * 60 * 1000,
+    enabled: Boolean(BranchIdRequired),
   });
 
   // Delete mutation

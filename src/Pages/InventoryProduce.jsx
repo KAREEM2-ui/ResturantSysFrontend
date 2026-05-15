@@ -4,8 +4,8 @@ import {
   Hammer,
   Trash2,
 } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 import EntityManagementCard from "../components/admin/EntityManagementCard";
 import ProduceFormPreview from "../components/admin/InventoryProduce/ProduceFormPreview";
@@ -25,6 +25,7 @@ import { useProductionEventsViewModel } from "../viewmodels/useProductionEventsV
 import { useBranchesViewModel } from "../viewmodels/useBranchesViewModel";
 import { PermissionGate } from "../components/auth/PermissionGate";
 import { ShieldCheck } from "lucide-react";
+import { selectBranchId, setSelectedBranchId } from "../features_State/appConfigSlice";
 
 
 
@@ -54,19 +55,12 @@ const columns = [
 
 export default function InventoryProduce() {
   const user = useSelector((state) => state.auth.user);
+  const dispatch = useDispatch();
+  const selectedBranchId = useSelector(selectBranchId);
   const [selectedProduce, setSelectedProduce] = useState(null);
   const [viewBatchDetails, setViewBatchDetails] = useState(false);
   const [addProduceBatch, setAddProduceBatch] = useState(false);
   const [page, setPage] = useState(1);
-  const [selectedBranchId, setSelectedBranchId] = useState(user?.branchId ? String(user.branchId) : null);
-
-  useEffect(() => {
-    if (user?.branchId) {
-      setSelectedBranchId(String(user.branchId));
-    }
-  }, [user?.branchId]);
-
-  const activeBranchId = user?.branchId ? String(user.branchId) : selectedBranchId;
   const { branches, isLoading: isLoadingBranches } = useBranchesViewModel(1);
 
   const {
@@ -95,7 +89,7 @@ export default function InventoryProduce() {
     return <div className="p-8 text-center text-muted-foreground">Loading production events...</div>;
   }
 
-  if (!activeBranchId) {
+  if (!selectedBranchId) {
     return (
       <div className="grid min-h-[60vh] place-items-center p-8 text-center">
         <div className="w-full max-w-md space-y-4 rounded-xl border bg-background p-6 shadow-sm">
@@ -110,7 +104,7 @@ export default function InventoryProduce() {
           {isLoadingBranches ? (
             <div className="text-sm text-muted-foreground">Loading branches...</div>
           ) : (
-            <Select value="" onValueChange={setSelectedBranchId}>
+            <Select value={selectedBranchId || ""} onValueChange={(value) => dispatch(setSelectedBranchId(value))}>
               <SelectTrigger className="h-11 w-full">
                 <SelectValue placeholder="Select branch" />
               </SelectTrigger>
@@ -225,7 +219,7 @@ export default function InventoryProduce() {
             </DialogHeader>
             <ProduceFormPreview
               event={selectedProduce}
-              branchId={activeBranchId}
+              branchId={selectedBranchId}
               createdBy={user?._id || user?.id}
               onSaved={() => setAddProduceBatch(false)}
             />

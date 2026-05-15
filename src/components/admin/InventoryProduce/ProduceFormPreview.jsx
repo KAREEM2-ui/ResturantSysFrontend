@@ -7,6 +7,10 @@ import { Loader2, AlertCircle } from "lucide-react";
 import { useProduceFormViewModel } from "../../../viewmodels/useProduceFormViewModel";
 
 export default function ProduceFormPreview({ event, branchId, createdBy, onSaved }) {
+  const getIngredientKey = (ingredient) => ingredient?.ingredientId?._id || ingredient?.ingredientId || ingredient?._id || "";
+  const getIngredientName = (ingredient) => ingredient?.name || ingredient?.ingredientId?.name || "Ingredient";
+  const getIngredientUnit = (ingredient) => ingredient?.unit || ingredient?.ingredientId?.unit || "unit";
+
   const {
     formData,
     setFormData,
@@ -159,13 +163,13 @@ export default function ProduceFormPreview({ event, branchId, createdBy, onSaved
           <h4 className="text-sm font-medium mb-4 border-b pb-2">Required Ingredients</h4>
           <div className="space-y-3">
             {selectedItemData.ItemIngredients.map((ing, idx) => (
-              <div key={idx} className="flex items-end gap-3">
+              <div key={getIngredientKey(ing) || idx} className="flex items-end gap-3">
                 <div className="flex-1">
                   <Label className="text-xs font-medium text-muted-foreground mb-1 block">
-                    {ing.name || `Ingredient ${idx + 1}`}
+                    {getIngredientName(ing) || `Ingredient ${idx + 1}`}
                   </Label>
                   <div className="h-9 flex items-center px-3 rounded-md border border-input bg-background text-sm">
-                    {ing.name || "Ingredient"}
+                    {getIngredientName(ing)}
                   </div>
                 </div>
                 <div className="w-24">
@@ -175,8 +179,8 @@ export default function ProduceFormPreview({ event, branchId, createdBy, onSaved
                   <Input
                     type="number"
                     placeholder="0"
-                    value={ingredientQuantities[ing._id || ing.ingredientId] || ""}
-                    onChange={(e) => handleIngredientQuantityChange(ing._id || ing.ingredientId, e.target.value)}
+                    value={ingredientQuantities[getIngredientKey(ing)] || ""}
+                    onChange={(e) => handleIngredientQuantityChange(getIngredientKey(ing), e.target.value)}
                     disabled={isLoadingItems}
                     min="0"
                     step="0.1"
@@ -188,7 +192,7 @@ export default function ProduceFormPreview({ event, branchId, createdBy, onSaved
                     Unit
                   </Label>
                   <div className="h-9 flex items-center px-3 rounded-md border border-input bg-muted text-sm">
-                    {ing.unit || "unit"}
+                    {getIngredientUnit(ing)}
                   </div>
                 </div>
               </div>

@@ -22,16 +22,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../components/ui/dialog";
-import { 
-  Select, SelectContent, SelectGroup, SelectItem, 
-  SelectLabel, SelectTrigger, SelectValue } 
-from "../components/ui/select";
-
 
 import { useOrdersViewModel } from "../viewmodels/useOrdersViewModel";
 import { PermissionGate } from "../components/auth/PermissionGate";
 import { ShieldCheck } from "lucide-react";
-import { useBranchesViewModel } from "@/viewmodels/useBranchesViewModel";
 import { useSelector } from "react-redux";
 
 
@@ -42,12 +36,19 @@ const columns = [
     key: "status",
     label: "Status",
     render: (value) => {
+      const status = String(value || "").toLowerCase();
       const classes =
-        value === "Completed"
+        status === "completed"
           ? "bg-emerald-100 text-emerald-800"
-          : value === "In Kitchen"
-            ? "bg-amber-100 text-amber-800"
-            : "bg-blue-100 text-blue-800";
+          : status === "ready"
+            ? "bg-emerald-100 text-emerald-800"
+            : status === "in_kitchen"
+              ? "bg-amber-100 text-amber-800"
+              : status === "pending"
+                ? "bg-sky-100 text-sky-800"
+                : status === "cancelled"
+                  ? "bg-red-100 text-red-800"
+                  : "bg-blue-100 text-blue-800";
 
       return (
         <Badge variant="secondary" className={classes}>
@@ -58,6 +59,7 @@ const columns = [
   },
   { key: "itemsSummary", label: "Total Items" },
   { key: "total", label: "Total" },
+  {key: "time", label: "Time"},
 ];
 
 export default function Orders() {
@@ -69,19 +71,19 @@ export default function Orders() {
   const [printReceipt, setPrintReceipt] = useState(false);
   const [page, setPage] = useState(1);
 
-  const { orders = [], totalCount = 0, isLoading, branchId, setBranchId } = useOrdersViewModel(page);
-  const { branches, isLoading: isLoadingBranches } = useBranchesViewModel();
+  const {
+    orders = [],
+    totalCount = 0,
+    isLoading,
+    branchId,
+    updateOrderStatus,
+    isUpdatingOrderStatus,
+  } = useOrdersViewModel(page);
 
   const openDialog = (row, setOpen) => {
     setSelectedOrder(row);
     setOpen(true);
   };
-
-  const handleBranchChange = (value) => {
-    setPage(1);
-    setBranchId(value);
-  };
-
 
   console.log(user);
   
@@ -94,29 +96,6 @@ export default function Orders() {
     <>
 
 
-      {user.role === "admin" && (
-        <div className="mb-4 rounded-lg border bg-white p-4">
-          <p className="mb-2 text-sm text-muted-foreground">Filter orders by branch</p>
-          <div className="w-80">
-            <Select value={branchId || ""} onValueChange={handleBranchChange}>
-              <SelectTrigger className="h-11 w-full">
-                <SelectValue placeholder={isLoadingBranches ? "Loading branches..." : "Select Branch"} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Branches</SelectLabel>
-                  {branches.map((branch) => (
-                    <SelectItem key={branch._id} value={branch._id}>
-                      {branch.name}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      )}
-
       {user.role === "admin" && !branchId ? (
         <div className="rounded-lg border p-10 text-center text-muted-foreground space-y-3">
           <AlertCircle className="mx-auto h-8 w-8" />
@@ -125,7 +104,7 @@ export default function Orders() {
       ) : (
       <EntityManagementCard
         title="Orders"
-        description="Build orders with menu items, then expose Foodics-style actions like send to kitchen, split bill, and capture payment."
+        description="Build orders with menu items."
         data={orders}
         columns={columns}
         pagination={{
@@ -136,7 +115,7 @@ export default function Orders() {
         }}
         rowActions={{
           label: (row) => row.id,
-          items: () => [
+          items: (row) => [
             {
               label: "View Order Details",
               icon: <Eye className="h-4 w-4" />,
@@ -152,6 +131,30 @@ export default function Orders() {
               icon: <BadgeDollarSign className="h-4 w-4" />,
               onClick: (row) => openDialog(row, setTakePayment),
             },
+            ...(String(row.status).toLowerCase() === "pending"
+              ? [
+                  {
+                    label: "Mark as Ready",
+                    icon: <ReceiptText className="h-4 w-4" />,
+                    onClick: async (selectedRow) => {
+                      await updateOrderStatus({
+                        id: selectedRow.id,
+                        status: "ready",
+                      });
+                    },
+                  },
+                  {
+                    label: "Cancel Order",
+                    icon: <AlertCircle className="h-4 w-4" />,
+                    onClick: async (selectedRow) => {
+                      await updateOrderStatus({
+                        id: selectedRow.id,
+                        status: "cancelled",
+                      });
+                    },
+                  },
+                ]
+              : []),
             {
               label: "Print Receipt",
               icon: <ReceiptText className="h-4 w-4" />,
@@ -161,6 +164,8 @@ export default function Orders() {
         }}
       />
       )}
+
+      {isUpdatingOrderStatus ? <div className="sr-only">Updating order status...</div> : null}
 
       <Dialog open={viewOrderDetails} onOpenChange={setViewOrderDetails}>
         <DialogContent className="max-w-2xl max-h-[97vh] overflow-y-auto">

@@ -8,6 +8,7 @@ import {
   UserX,
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useSelector } from "react-redux";
 
 import AuthoritiesSummary from "../components/admin/Users/AuthoritiesSummary";
 import EntityManagementCard from "../components/admin/EntityManagementCard";
@@ -34,6 +35,7 @@ import { useUsersViewModel } from "../viewmodels/useUsersViewModel";
 import { useBranchesViewModel } from "../viewmodels/useBranchesViewModel";
 import { useCan } from "../hooks/useCan";
 import { PermissionGate } from "../components/auth/PermissionGate";
+import { selectBranchId } from "../features_State/appConfigSlice";
 
 const columns = [
   { key: "fullName", label: "Name" },
@@ -54,7 +56,6 @@ const columns = [
 ];
 
 export default function UsersPage() {
-  const [selectedBranch, setSelectedBranch] = useState("all");
   const [selectedUser, setSelectedUser] = useState(null);
   const [addUser, setAddUser] = useState(false);
   const [editUser, setEditUser] = useState(false);
@@ -62,6 +63,7 @@ export default function UsersPage() {
   const [deactivateUser, setDeactivateUser] = useState(false);
   const [page, setPage] = useState(1);
 
+  const selectedBranch = useSelector(selectBranchId) || "all";
   const { users, totalCount, isLoading } = useUsersViewModel(page);
   const { branches } = useBranchesViewModel();
 
@@ -69,7 +71,7 @@ export default function UsersPage() {
     if (selectedBranch === "all") {
       return users;
     }
-    return users.filter((row) => row.branchId === selectedBranch);
+    return users.filter((row) => String(row.branchId?._id || row.branchId || "") === String(selectedBranch));
   }, [selectedBranch, users]);
 
   const openDialog = (row, setOpen) => {
@@ -79,22 +81,7 @@ export default function UsersPage() {
 
   return (
     <div className="space-y-4">
-      <div className="max-w-xs space-y-2">
-        <Label htmlFor="users-branch-select">Select Branch</Label>
-        <Select value={selectedBranch} onValueChange={setSelectedBranch}>
-          <SelectTrigger id="users-branch-select" className="h-11 w-full">
-            <SelectValue placeholder="All Branches" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Branches</SelectItem>
-            {branches.map((branch) => (
-              <SelectItem key={branch._id} value={branch._id}>
-                {branch.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+        
 
       <EntityManagementCard
         title="Users"

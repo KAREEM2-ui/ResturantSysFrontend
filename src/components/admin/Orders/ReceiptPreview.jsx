@@ -21,7 +21,7 @@ export default function ReceiptPreview({ order }) {
     (sum, item) => sum + (Number(item.qty) || 0) * (Number(item.unitPrice) || 0),
     0
   );
-  const total = formatCurrency(subtotal);
+  
 
   return (
     <div className="rounded-xl border bg-linear-to-b from-background to-muted/20 p-4 shadow-sm">
@@ -92,16 +92,12 @@ export default function ReceiptPreview({ order }) {
 
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Items Count</span>
-            <span className="font-medium">{order.itemsSummary ?? items.length}</span>
-          </div>
-          <div className="flex justify-between">
             <span className="text-muted-foreground">Subtotal</span>
             <span className="font-medium">{formatCurrency(subtotal)}</span>
           </div>
           <div className="flex justify-between border-t pt-2 text-base font-bold">
             <span>Total</span>
-            <span>{total}</span>
+            <span data-testid="invoice-total">{formatCurrency(subtotal)}</span>
           </div>
         </div>
 

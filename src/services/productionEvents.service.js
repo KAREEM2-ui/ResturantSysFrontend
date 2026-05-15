@@ -1,10 +1,19 @@
 
 import { getAuthHeaders } from "../components/auth/util";
 
+async function parseErrorMessage(response, fallbackMessage) {
+  try {
+    const data = await response.json();
+    return data?.message || fallbackMessage;
+  } catch {
+    return fallbackMessage;
+  }
+}
+
 export const productionEventsService = {
   // Get all production events (paginated)
-  getProductionEvents: async (page = 1) => {
-    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/production-events?page=${page}`, {
+  getProductionEvents: async ({ page = 1, branchId } = {}) => {
+    const response = await fetch(`${import.meta.env.VITE_API_BACKEND}/production-events?page=${page}&branchId=${branchId}`, {
       method: "GET",
       headers: getAuthHeaders(),
     });
@@ -29,7 +38,9 @@ export const productionEventsService = {
       headers: getAuthHeaders(),
       body: JSON.stringify(payload),
     });
-    if (!response.ok) throw new Error("Failed to create production event");
+    if (!response.ok) {
+      throw new Error(await parseErrorMessage(response, "Failed to create production event"));
+    }
     return response.json();
   },
 
@@ -44,7 +55,9 @@ export const productionEventsService = {
     });
 
     console.log("update produce response:", response);
-    if (!response.ok) throw new Error("Failed to update production event");
+    if (!response.ok) {
+      throw new Error(await parseErrorMessage(response, "Failed to update production event"));
+    }
     return response.json();
   },
 

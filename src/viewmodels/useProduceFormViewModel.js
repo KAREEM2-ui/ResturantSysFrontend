@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useSelector } from "react-redux";
 import { branchInventoryService } from "../services/branchInventory.service";
 import { productionEventsService } from "../services/productionEvents.service";
+import { selectBranchId } from "../features_State/appConfigSlice";
 
 const statusMap = {
   "In Progress": "in_progress",
@@ -15,7 +17,21 @@ const statusLabelMap = {
   cancelled: "Cancelled",
 };
 
+function getIngredientKey(ingredient) {
+  return ingredient?.ingredientId?._id || ingredient?.ingredientId || ingredient?._id || "";
+}
+
+function getIngredientName(ingredient) {
+  return ingredient?.name || ingredient?.ingredientId?.name || "Ingredient";
+}
+
+function getIngredientUnit(ingredient) {
+  return ingredient?.unit || ingredient?.ingredientId?.unit || "unit";
+}
+
 export const useProduceFormViewModel = (event, branchId, createdBy, onSaved) => {
+  const selectedBranchId = useSelector(selectBranchId);
+  const activeBranchId = branchId || selectedBranchId;
   // Local form state
   const [formData, setFormData] = useState({
     producedItem: event?.producedItem || "",
@@ -47,16 +63,16 @@ export const useProduceFormViewModel = (event, branchId, createdBy, onSaved) => 
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["productionEvents"] });
-      await queryClient.invalidateQueries({ queryKey: ["branchInventory", branchId] });
+      await queryClient.invalidateQueries({ queryKey: ["branchInventory", activeBranchId] });
       onSaved?.();
     },
   });
 
   // Query: Fetch all producible items (cached)
   const { data: itemsData = [], isLoading: isLoadingItems } = useQuery({
-    queryKey: ["producibleItems", branchId],
-    queryFn: () => branchInventoryService.getProducibleItemsByBranch(branchId),
-    enabled: Boolean(branchId),
+    queryKey: ["producibleItems", activeBranchId],
+    queryFn: () => branchInventoryService.getProducibleItemsByBranch(activeBranchId),
+    enabled: Boolean(activeBranchId),
     staleTime: 10 * 60 * 1000, // 10 min cache
   });
 
@@ -95,7 +111,7 @@ export const useProduceFormViewModel = (event, branchId, createdBy, onSaved) => 
         const initialQuantities = {};
         if (resolvedItemDetails?.ItemIngredients?.length > 0) {
           resolvedItemDetails.ItemIngredients.forEach((ing) => {
-            initialQuantities[ing._id || ing.ingredientId] = "";
+            initialQuantities[getIngredientKey(ing)] = "";
           });
         }
         setIngredientQuantities(initialQuantities);
@@ -133,7 +149,8 @@ export const useProduceFormViewModel = (event, branchId, createdBy, onSaved) => 
     const initialQuantities = {};
     const itemIngredients = match.ItemIngredients || selectedItemData?.ItemIngredients || [];
     itemIngredients.forEach((ing) => {
-      initialQuantities[ing._id || ing.ingredientId] = ingredientQuantities[ing._id || ing.ingredientId] || "";
+      const ingredientKey = getIngredientKey(ing);
+      initialQuantities[ingredientKey] = ingredientQuantities[ingredientKey] || "";
     });
     setIngredientQuantities((prev) => ({ ...initialQuantities, ...prev }));
     setSelectedItemData(match);
@@ -161,6 +178,11 @@ export const useProduceFormViewModel = (event, branchId, createdBy, onSaved) => 
       return;
     }
 
+    if (!activeBranchId) {
+      setError("Please select a branch first");
+      return;
+    }
+
     if (formData.quantityProduced <= 0) {
       setError("Quantity must be greater than 0");
       return;
@@ -169,17 +191,17 @@ export const useProduceFormViewModel = (event, branchId, createdBy, onSaved) => 
     // Build ingredients array
     const itemIngredients = selectedItemData?.ItemIngredients || event?.producedItemId?.ItemIngredients || [];
     const ingredients = itemIngredients.map((ing) => {
-      const ingredientId = ing._id || ing.ingredientId;
+      const ingredientId = getIngredientKey(ing);
 
       return {
         itemId: ingredientId,
         quantity: parseFloat(ingredientQuantities[ingredientId]) || 0,
-        unit: ing.unit || "unit",
+        unit: getIngredientUnit(ing),
       };
     }) || [];
 
     const payload = {
-      branchId,
+      branchId: activeBranchId,
       producedItemId: selectedItemId,
       producedItem: formData.producedItem,
       quantity: formData.quantityProduced,

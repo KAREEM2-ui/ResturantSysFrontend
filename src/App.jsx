@@ -1,8 +1,13 @@
-import { Suspense } from "react";
+import { Suspense,useEffect } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import AdminLayout from "./components/admin/AdminLayout";
 import { sectionRoutes, homeRoute } from "./components/admin/admin-config";
 import { Skeleton } from "./components/ui/skeleton";
+import { branchesService } from "./services/branches.service";
+import { setSelectedBranchId } from "./features_State/appConfigSlice";
+import { useSelector } from "react-redux";
+
+
 
 function PageSkeleton() {
   return (
@@ -18,6 +23,40 @@ function PageSkeleton() {
 }
 
 function App() {
+
+
+  const authUser = useSelector((state) => state.auth.user);
+  
+  
+  // user location to determine branch 
+  useEffect(()=> {
+    
+    async function tryAssignBranchByLocation() {
+      
+      const branches = await branchesService.getBranches();
+
+      branchesService.TrygetUserBranchByLocation().then((res)=>{
+        
+
+      for (let branch of branches) {1
+          if (new RegExp(res.location.city, "i").test(branch.name)) {
+            dispatch(setSelectedBranchId(branch._id));
+            break;
+          }
+        }
+      })
+    }
+
+
+    if (authUser.branch === undefined || authUser.branch === null) {
+      tryAssignBranchByLocation();
+    }
+
+    
+    
+
+  },[])
+
   return (
     <BrowserRouter>
       <Routes>

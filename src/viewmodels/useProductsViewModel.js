@@ -1,9 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { inventoryService } from "../services/inventory.service";
 import { productsService } from "../services/products.service";
 import { useBranchesViewModel } from "./useBranchesViewModel";
+import { useDispatch, useSelector } from "react-redux";
+import { selectBranchId, setSelectedBranchId } from "../features_State/appConfigSlice";
 
 function toProductVM(product) {
   const ingredients = Array.isArray(product?.ingredients) ? product.ingredients : [];
@@ -25,19 +27,14 @@ function toProductVM(product) {
 
 export function useProductsViewModel(page = 1) {
   const queryClient = useQueryClient();
-  const [selectedBranchId, setSelectedBranchId] = useState(null);
+  const dispatch = useDispatch();
+  const selectedBranchId = useSelector(selectBranchId);
   const {
     branches,
     isLoading: isLoadingBranches,
     isError: isBranchesError,
     error: branchesError,
   } = useBranchesViewModel(1);
-
-  useEffect(() => {
-    if (!selectedBranchId && branches?.length) {
-      setSelectedBranchId(String(branches[0]._id));
-    }
-  }, [branches, selectedBranchId]);
 
   const {
     data,
@@ -110,7 +107,7 @@ export function useProductsViewModel(page = 1) {
     branchProducts,
     totalCount: data?.totalCount || 0,
     selectedBranchId,
-    setSelectedBranchId,
+    setSelectedBranchId: (value) => dispatch(setSelectedBranchId(value)),
     branches,
     inventoryItems,
     isLoading: isLoading || isLoadingBranches,
