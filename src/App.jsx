@@ -5,7 +5,7 @@ import { sectionRoutes, homeRoute } from "./components/admin/admin-config";
 import { Skeleton } from "./components/ui/skeleton";
 import { branchesService } from "./services/branches.service";
 import { setSelectedBranchId } from "./features_State/appConfigSlice";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 
 
@@ -26,19 +26,20 @@ function App() {
 
 
   const authUser = useSelector((state) => state.auth.user);
-  
+  const dispatch = useDispatch();
   
   // user location to determine branch 
   useEffect(()=> {
     
     async function tryAssignBranchByLocation() {
       
-      const branches = await branchesService.getBranches();
+      const result = await branchesService.getBranches();
 
       branchesService.TrygetUserBranchByLocation().then((res)=>{
         
 
-      for (let branch of branches) {1
+
+      for (let branch of result.data.branches) {
           if (new RegExp(res.location.city, "i").test(branch.name)) {
             dispatch(setSelectedBranchId(branch._id));
             break;
@@ -50,6 +51,13 @@ function App() {
 
     if (authUser.branch === undefined || authUser.branch === null) {
       tryAssignBranchByLocation();
+    }
+
+
+    // assign branchid if user has only one branch
+    if(authUser.branchId)
+    {
+        dispatch(setSelectedBranchId(authUser.branchId));
     }
 
     

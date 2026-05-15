@@ -39,6 +39,7 @@ export default function POS() {
   const branchIdFromStore = useSelector((state) => state.appConfig.selectedBranchId);
 
 
+  console.log("Selected Branch ID in POS:", branchIdFromStore);
 
   
   const [selectedCategory, setSelectedCategory] = useState("All");
