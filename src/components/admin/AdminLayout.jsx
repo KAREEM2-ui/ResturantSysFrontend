@@ -90,6 +90,15 @@ export function AppSidebar() {
     }
   };
 
+  useEffect(() => {
+
+    // assign branchid if user has only one branch
+    if(authUser?.branchId !== undefined && authUser?.branchId !== null)
+    {
+        dispatch(setSelectedBranchId(authUser.branchId));
+    }
+
+  },[])
 
 
   return (

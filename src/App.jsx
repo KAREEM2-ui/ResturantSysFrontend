@@ -49,16 +49,11 @@ function App() {
     }
 
 
-    if (authUser.branch === undefined || authUser.branch === null) {
+    if (authUser?.branch === undefined || authUser?.branch === null && authUser !== null) {
       tryAssignBranchByLocation();
     }
 
 
-    // assign branchid if user has only one branch
-    if(authUser.branchId)
-    {
-        dispatch(setSelectedBranchId(authUser.branchId));
-    }
 
     
     
